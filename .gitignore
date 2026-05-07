@@ -1,6 +1,7 @@
 djangoproject/.env
 .venv
 .env
+.DS_Store
 
 
 db.sqlite3
