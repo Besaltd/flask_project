@@ -11,6 +11,8 @@ class CategoryAdmin(admin.ModelAdmin):
 class SubTaskInline(admin.TabularInline):
     model = SubTask
     extra = 1
+    fields = ('title', 'status', 'deadline')
+    show_change_link = True
 
 
 @admin.register(Task)
