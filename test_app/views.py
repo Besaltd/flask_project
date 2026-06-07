@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,6 +22,9 @@ class TaskCreateView(APIView):
 class TaskListView(APIView):
     def get(self, request):
         tasks = Task.objects.all()
+        day = request.GET.get('day')
+        if day:
+            tasks = Task.objects.filter(deadline__week_day=day)
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
 
@@ -50,9 +54,23 @@ class TaskStatsView(APIView):
 
 class SubTaskListCreateView(APIView):
     def get(self, request):
-        subtasks = SubTask.objects.all()
-        serializer = SubTaskCreateSerializer(subtasks, many=True)
-        return Response(serializer.data)
+        subtasks = SubTask.objects.all().order_by('-created_at')
+        task_title = request.GET.get('task_title')
+        sub_status = request.GET.get('status')
+        if task_title:
+            subtasks = subtasks.filter(task__title=task_title)
+        if sub_status:
+            subtasks = subtasks.filter(status=sub_status)
+
+        paginator = Paginator(subtasks, 5)
+        page = paginator.get_page(request.GET.get('page', 1))
+        serializer = SubTaskCreateSerializer(page.object_list, many=True)
+
+        return Response({
+            'count': paginator.count,
+            'total_pages': paginator.num_pages,
+            'results': serializer.data
+        })
 
     def post(self, request):
         serializer = SubTaskCreateSerializer(data=request.data)
