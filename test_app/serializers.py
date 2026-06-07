@@ -6,7 +6,7 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ('id', 'title', 'description', 'status', 'deadline')
 
-# Завдання 1
+
 class SubTaskCreateSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(read_only=True)
 
@@ -15,7 +15,7 @@ class SubTaskCreateSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'description', 'status', 'deadline', 'task', 'created_at')
 
 
-# Завдання 2
+
 class CategoryCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -32,7 +32,13 @@ class CategoryCreateSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-# Завдання 3
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'is_deleted', 'deleted_at']
+        read_only_fields = ['is_deleted', 'deleted_at']
+
+
 class SubTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubTask
@@ -47,7 +53,7 @@ class TaskDetailSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'description', 'status', 'deadline', 'created_at', 'subtasks')
 
 
-# Завдання 4
+
 class TaskCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task

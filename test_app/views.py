@@ -3,12 +3,15 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, filters
+from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpRequest, HttpResponse
 from django.utils import timezone
 from django.db.models import Count, Q
-from .models import Task, SubTask
-from .serializers import TaskSerializer, SubTaskCreateSerializer
+from rest_framework.viewsets import ModelViewSet
+
+from .models import Task, SubTask, Category
+from .serializers import TaskSerializer, SubTaskCreateSerializer, CategorySerializer
 
 def greetings(request: HttpRequest) -> HttpResponse:
     return HttpResponse('Hello, Ruslan!')
@@ -141,3 +144,14 @@ class SubTaskListCreateView(generics.ListCreateAPIView):
 class SubTaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SubTask.objects.all()
     serializer_class = SubTaskCreateSerializer
+
+
+class CategoryViewSet(ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+    @action(detail=True, methods=['get'])
+    def count_tasks(self, request, pk=None):
+        category = self.get_object()
+        count = category.tasks.count()
+        return Response({'count': count})

@@ -1,6 +1,14 @@
 from django.contrib import admin
-from django.urls import path
-from test_app.views import greetings, TaskListCreateView, TaskRetrieveUpdateDestroyView, TaskStatsView, SubTaskListCreateView, SubTaskRetrieveUpdateDestroyView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from test_app.views import (
+    greetings, TaskListCreateView, TaskRetrieveUpdateDestroyView,
+    TaskStatsView, SubTaskListCreateView, SubTaskRetrieveUpdateDestroyView,
+    CategoryViewSet
+)
+
+router = DefaultRouter()
+router.register(r'categories', CategoryViewSet, basename='category')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -10,4 +18,5 @@ urlpatterns = [
     path('api/tasks/stats/', TaskStatsView.as_view()),
     path('api/subtasks/', SubTaskListCreateView.as_view()),
     path('api/subtasks/<int:pk>/', SubTaskRetrieveUpdateDestroyView.as_view()),
+    path('api/', include(router.urls)),
 ]
